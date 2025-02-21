@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 
@@ -64,7 +64,7 @@ export default function RecipeScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
       <ThemedText type="title" style={styles.title}>{recipe.name}</ThemedText>
       <ThemedText style={styles.author}>by {recipe.author}</ThemedText>
 
@@ -90,7 +90,7 @@ export default function RecipeScreen() {
           {index + 1}. {instruction.text}
         </ThemedText>
       ))}
-    </ThemedView>
+    </ScrollView>
   );
 }
 

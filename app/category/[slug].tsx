@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -59,7 +59,7 @@ export default function CategoryScreen() {
   }
 
   return (
-    <ThemedView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
       {category.recipes.map((recipe) => (
         <TouchableOpacity
           key={recipe.slug}
@@ -74,7 +74,7 @@ export default function CategoryScreen() {
           />
         </TouchableOpacity>
       ))}
-    </ThemedView>
+    </ScrollView>
   );
 }
 
