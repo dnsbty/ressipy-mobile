@@ -36,7 +36,7 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
         <ActivityIndicator size="large" color={Colors[colorScheme].tint} />
       </SafeAreaView>
     );
@@ -44,14 +44,14 @@ export default function HomeScreen() {
 
   if (error) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
         <ThemedText>{error}</ThemedText>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
       <ThemedText type="title" style={styles.title}>
         Categories
       </ThemedText>
@@ -77,7 +77,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: Colors.light.background,
   },
   title: {
     marginBottom: 20,
