@@ -172,3 +172,20 @@ export async function saveRecipe(recipe: Recipe): Promise<void> {
     console.error(error);
   }
 }
+
+export async function searchRecipes(query: string): Promise<Recipe[]> {
+  const results = await db.getAllAsync<Recipe>(
+    `SELECT * FROM recipes 
+     WHERE name LIKE ? 
+     OR author LIKE ? 
+     OR ingredients LIKE ? 
+     ORDER BY name`,
+    [`%${query}%`, `%${query}%`, `%${query}%`]
+  );
+
+  return results.map((recipe) => ({
+    ...recipe,
+    ingredients: JSON.parse(recipe.ingredients as unknown as string),
+    instructions: JSON.parse(recipe.instructions as unknown as string),
+  }));
+}
