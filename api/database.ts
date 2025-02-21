@@ -82,6 +82,18 @@ export async function initDatabase(): Promise<void> {
   }
 }
 
+export async function resetDatabase(): Promise<void> {
+  try {
+    await db.execAsync(`
+    DELETE FROM categories;
+    DELETE FROM recipes;
+  `);
+    console.info('Database reset successfully');
+  } catch (error) {
+    console.error('Failed to reset database:', error);
+  }
+}
+
 export async function getCategories(): Promise<Category[]> {
   const results = await db.getAllAsync<Category>(
     "SELECT * FROM categories ORDER BY name",
