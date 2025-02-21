@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -8,30 +8,37 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-type Category = {
+type Recipe = {
   name: string;
   slug: string;
 };
 
-export default function HomeScreen() {
-  const [categories, setCategories] = useState<Category[]>([]);
+type CategoryDetails = {
+  name: string;
+  recipes: Recipe[];
+  slug: string;
+};
+
+export default function CategoryScreen() {
+  const { slug } = useLocalSearchParams();
+  const [category, setCategory] = useState<CategoryDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const colorScheme = useColorScheme() ?? 'light';
 
   useEffect(() => {
-    fetch('https://ressipy.com/api/categories')
+    fetch(`https://ressipy.com/api/categories/${slug}`)
       .then(response => response.json())
       .then(data => {
-        setCategories(data.categories);
+        setCategory(data.category);
         setIsLoading(false);
       })
       .catch(err => {
-        setError('Failed to load categories');
+        setError('Failed to load recipes');
         setIsLoading(false);
       });
-  }, []);
+  }, [slug]);
 
   if (isLoading) {
     return (
@@ -41,24 +48,24 @@ export default function HomeScreen() {
     );
   }
 
-  if (error) {
+  if (error || !category) {
     return (
       <ThemedView style={styles.container}>
-        <ThemedText>{error}</ThemedText>
+        <ThemedText>{error || 'Category not found'}</ThemedText>
       </ThemedView>
     );
   }
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Categories</ThemedText>
-      {categories.map((category) => (
+      <ThemedText type="title" style={styles.title}>{category.name}</ThemedText>
+      {category.recipes.map((recipe) => (
         <TouchableOpacity
-          key={category.slug}
+          key={recipe.slug}
           style={styles.row}
-          onPress={() => router.push(`/category/${category.slug}`)}
+          onPress={() => router.push(`/recipe/${recipe.slug}`)}
         >
-          <ThemedText type="defaultSemiBold">{category.name}</ThemedText>
+          <ThemedText type="defaultSemiBold">{recipe.name}</ThemedText>
           <IconSymbol
             name="chevron.right"
             size={20}

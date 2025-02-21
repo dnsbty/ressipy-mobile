@@ -31,7 +31,8 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="category/[slug]" options={{ title: 'Category' }} />
+        <Stack.Screen name="recipe/[slug]" options={{ title: 'Recipe' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
