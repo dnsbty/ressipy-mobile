@@ -42,7 +42,12 @@ export async function initDatabase(): Promise<void> {
         // Save categories
         for (const category of data.categories) {
           await db.runAsync(
-            "INSERT INTO categories (slug, name, updated_at) VALUES (?, ?, ?)",
+            `INSERT INTO categories (slug, name, updated_at)
+              VALUES (?, ?, ?)
+              ON CONFLICT(slug) DO UPDATE SET
+                name = excluded.name,
+                updated_at = excluded.updated_at
+            `,
             [category.slug, category.name, Date.now()],
           );
         }
@@ -71,7 +76,15 @@ export async function initDatabase(): Promise<void> {
               ingredients,
               instructions,
               updated_at
-            ) VALUES ${placeholders}`,
+            ) VALUES ${placeholders}
+            ON CONFLICT(slug) DO UPDATE SET
+              name = excluded.name,
+              author = excluded.author,
+              category_slug = excluded.category_slug,
+              ingredients = excluded.ingredients,
+              instructions = excluded.instructions,
+              updated_at = excluded.updated_at
+            `,
           values.flat(),
         );
       });
@@ -109,7 +122,11 @@ export async function saveCategories(categories: Category[]): Promise<void> {
     // Insert new categories
     for (const category of categories) {
       await db.runAsync(
-        "INSERT INTO categories (slug, name, updated_at) VALUES (?, ?, ?)",
+        `INSERT INTO categories (slug, name, updated_at) VALUES (?, ?, ?)
+          ON CONFLICT(slug) DO UPDATE SET
+            name = excluded.name,
+            updated_at = excluded.updated_at
+        `,
         [category.slug, category.name, Date.now()],
       );
     }
@@ -149,15 +166,23 @@ export async function getRecipe(slug: string): Promise<Recipe | null> {
 export async function saveRecipe(recipe: Recipe): Promise<void> {
   try {
     await db.runAsync(
-      `INSERT OR REPLACE INTO recipes (
-      slug,
-      name,
-      author,
-      category_slug,
-      ingredients,
-      instructions,
-      updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO recipes (
+        slug,
+        name,
+        author,
+        category_slug,
+        ingredients,
+        instructions,
+        updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(slug) DO UPDATE SET
+        name = excluded.name,
+        author = excluded.author,
+        category_slug = excluded.category_slug,
+        ingredients = excluded.ingredients,
+        instructions = excluded.instructions,
+        updated_at = excluded.updated_at
+      `,
       [
         recipe.slug,
         recipe.name,

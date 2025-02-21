@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ressipy-mobile",
+    "name": "Ressipy",
     "slug": "ressipy-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,16 +15,9 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
-    },
     "web": {
       "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "static"
     },
     "plugins": [
       "expo-router",
