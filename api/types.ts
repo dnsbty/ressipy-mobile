@@ -1,17 +1,7 @@
 export type Category = {
   name: string;
   slug: string;
-};
-
-export type Recipe = {
-  name: string;
-  slug: string;
-};
-
-export type CategoryDetails = {
-  name: string;
-  recipes: Recipe[];
-  slug: string;
+  updated_at: number;
 };
 
 export type Ingredient = {
@@ -19,19 +9,16 @@ export type Ingredient = {
   name: string;
 };
 
-export type RecipeDetails = {
-  name: string;
-  author: string;
-  ingredients: Ingredient[];
-  instructions: { text: string }[];
-  slug: string;
-  category: {
-    name: string;
-    slug: string;
-  };
+export type Instruction = {
+  text: string;
 };
 
-export type CachedData<T> = {
-  data: T;
-  timestamp: number;
+export type Recipe = {
+  author: string;
+  category_slug: string;
+  ingredients: Ingredient[];
+  instructions: Instruction[];
+  name: string;
+  slug: string;
+  updated_at: number;
 };

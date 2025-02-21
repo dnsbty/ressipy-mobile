@@ -3,7 +3,7 @@ import { StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'rea
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 
 import { fetchCategoryBySlug } from '@/api/apiClient';
-import { CategoryDetails } from '@/api/types';
+import { Recipe } from '@/api/types';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -12,7 +12,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function CategoryScreen() {
   const { slug } = useLocalSearchParams();
-  const [category, setCategory] = useState<CategoryDetails | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -22,11 +22,12 @@ export default function CategoryScreen() {
   useEffect(() => {
     fetchCategoryBySlug(slug as string)
       .then(data => {
-        setCategory(data.category);
+        setRecipes(data.category.recipes);
         navigation.setOptions({ title: data.category.name });
         setIsLoading(false);
       })
       .catch(err => {
+        console.error(err);
         setError('Failed to load recipes');
         setIsLoading(false);
       });
@@ -40,7 +41,7 @@ export default function CategoryScreen() {
     );
   }
 
-  if (error || !category) {
+  if (error || !recipes) {
     return (
       <ThemedView style={styles.container}>
         <ThemedText>{error || 'Category not found'}</ThemedText>
@@ -50,7 +51,7 @@ export default function CategoryScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
-      {category.recipes.map((recipe) => (
+      {recipes.map((recipe) => (
         <TouchableOpacity
           key={recipe.slug}
           style={styles.row}
