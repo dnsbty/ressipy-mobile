@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { Category, Recipe } from "./types";
 
@@ -9,10 +8,6 @@ export async function initDatabase(): Promise<void> {
   db = await SQLite.openDatabaseAsync("ressipy.db");
   await db.execAsync(`
     PRAGMA journal_mode = WAL;
-    
-    DROP TABLE IF EXISTS categories;
-    DROP TABLE IF EXISTS category_details;
-    DROP TABLE IF EXISTS recipes;
     
     CREATE TABLE IF NOT EXISTS categories (
       slug TEXT PRIMARY KEY,
@@ -31,6 +26,60 @@ export async function initDatabase(): Promise<void> {
       FOREIGN KEY (category_slug) REFERENCES categories (slug)
     );
   `);
+
+  // Check if we need to populate the database
+  const categoriesCount = await db.getFirstAsync<{ count: number }>(
+    "SELECT COUNT(*) as count FROM categories",
+  );
+
+  if (categoriesCount?.count === 0) {
+    console.info("Fetching initial data from API");
+    try {
+      const response = await fetch("https://ressipy.com/api/data");
+      const data = await response.json();
+
+      await db.withTransactionAsync(async () => {
+        // Save categories
+        for (const category of data.categories) {
+          await db.runAsync(
+            "INSERT INTO categories (slug, name, updated_at) VALUES (?, ?, ?)",
+            [category.slug, category.name, Date.now()],
+          );
+        }
+
+        // Save recipes
+        const recipeCount = data.recipes.length;
+        const placeholders = Array(recipeCount).fill("(?, ?, ?, ?, ?, ?, ?)").join(",");
+        const values = [];
+        for (const recipe of data.recipes) {
+          values.push([
+            recipe.slug,
+            recipe.name,
+            recipe.author,
+            recipe.category.slug,
+            JSON.stringify(recipe.ingredients),
+            JSON.stringify(recipe.instructions),
+            Date.now(),
+          ]);
+        }
+        await db.runAsync(
+          `INSERT INTO recipes (
+              slug,
+              name,
+              author,
+              category_slug,
+              ingredients,
+              instructions,
+              updated_at
+            ) VALUES ${placeholders}`,
+          values.flat(),
+        );
+      });
+      console.info("Initial data loaded successfully");
+    } catch (error) {
+      console.error("Failed to load initial data:", error);
+    }
+  }
 }
 
 export async function getCategories(): Promise<Category[]> {

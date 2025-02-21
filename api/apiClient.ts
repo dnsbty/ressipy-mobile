@@ -23,7 +23,6 @@ async function isStale(timestamp: number): Promise<boolean> {
 export async function fetchCategories(): Promise<{ categories: Category[] }> {
   try {
     const cached = await getCategories();
-    console.log({ cached })
 
     if (cached.length > 0 && !(await isStale(cached[0].updated_at))) {
       return { categories: cached };
