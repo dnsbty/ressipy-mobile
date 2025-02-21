@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -22,10 +22,11 @@ export default function SearchScreen() {
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
   const navigation = useNavigation();
+  const inputRef = useRef<TextInput>(null);
 
   useEffect(() => {
-    console.log("Search screen mounted");
     navigation.setOptions({ title: "Search" });
+    inputRef.current?.focus();
   }, [navigation]);
 
   const handleSearch = async (text: string) => {
@@ -38,6 +39,12 @@ export default function SearchScreen() {
     }
   };
 
+  const handleClear = () => {
+    setQuery("");
+    setRecipes([]);
+    inputRef.current?.focus();
+  };
+
   return (
     <SafeAreaView
       style={[
@@ -46,21 +53,37 @@ export default function SearchScreen() {
       ]}
     >
       <View style={styles.searchContainer}>
-        <TextInput
-          style={[
-            styles.searchInput,
-            {
-              backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
-              color: Colors[colorScheme].text,
-            },
-          ]}
-          placeholder="Search recipes..."
-          placeholderTextColor="#999"
-          value={query}
-          onChangeText={handleSearch}
-          autoCapitalize="none"
-          autoCorrect={false}
-        />
+        <View style={styles.searchInputContainer}>
+          <TextInput
+            ref={inputRef}
+            style={[
+              styles.searchInput,
+              {
+                backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
+                color: Colors[colorScheme].text,
+              },
+            ]}
+            placeholder="Search recipes..."
+            placeholderTextColor="#999"
+            value={query}
+            onChangeText={handleSearch}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          {query.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClear}
+              style={styles.clearButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <IconSymbol
+                name="xmark.circle.fill"
+                size={20}
+                color={Colors[colorScheme].icon}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       <ScrollView style={styles.results}>
@@ -90,11 +113,23 @@ const styles = StyleSheet.create({
   searchContainer: {
     padding: 16,
   },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+  },
   searchInput: {
+    flex: 1,
     height: 40,
     borderRadius: 8,
     paddingHorizontal: 16,
+    paddingRight: 40,
     fontSize: 16,
+  },
+  clearButton: {
+    position: 'absolute',
+    right: 8,
+    padding: 4,
   },
   results: {
     flex: 1,

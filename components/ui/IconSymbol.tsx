@@ -16,6 +16,7 @@ const MAPPING = {
   'square.and.arrow.up': 'share',
   'gear': 'settings',
   'magnifyingglass': 'search',
+  'xmark.circle.fill': 'cancel',
 } as Partial<
   Record<
     import('expo-symbols').SymbolViewProps['name'],
