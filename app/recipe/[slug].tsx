@@ -3,35 +3,23 @@ import { StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView, Alert } fr
 import { useLocalSearchParams } from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
 
+import { fetchRecipeBySlug } from '@/api/apiClient';
+import { RecipeDetails } from '@/api/types';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-type Ingredient = {
-  amount: string;
-  name: string;
-};
-
-type Recipe = {
-  name: string;
-  author: string;
-  ingredients: Ingredient[];
-  instructions: { text: string }[];
-  slug: string;
-};
-
 export default function RecipeScreen() {
   const { slug } = useLocalSearchParams();
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [recipe, setRecipe] = useState<RecipeDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const colorScheme = useColorScheme() ?? 'light';
 
   useEffect(() => {
-    fetch(`https://ressipy.com/api/recipes/${slug}`)
-      .then(response => response.json())
+    fetchRecipeBySlug(slug as string)
       .then(data => {
         setRecipe(data.recipe);
         setIsLoading(false);

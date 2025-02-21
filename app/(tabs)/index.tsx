@@ -3,6 +3,8 @@ import { StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { fetchCategories } from "@/api/apiClient";
+import { Category } from "@/api/types";
 import { ThemedText } from "@/components/ThemedText";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Colors } from "@/constants/Colors";
@@ -21,8 +23,7 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme() ?? "light";
 
   useEffect(() => {
-    fetch("https://ressipy.com/api/categories")
-      .then((response) => response.json())
+    fetchCategories()
       .then((data) => {
         setCategories(data.categories);
         setIsLoading(false);

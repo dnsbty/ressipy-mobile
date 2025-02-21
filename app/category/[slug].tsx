@@ -2,22 +2,13 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 
+import { fetchCategoryBySlug } from '@/api/apiClient';
+import { CategoryDetails } from '@/api/types';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-
-type Recipe = {
-  name: string;
-  slug: string;
-};
-
-type CategoryDetails = {
-  name: string;
-  recipes: Recipe[];
-  slug: string;
-};
 
 export default function CategoryScreen() {
   const { slug } = useLocalSearchParams();
@@ -29,8 +20,7 @@ export default function CategoryScreen() {
   const colorScheme = useColorScheme() ?? 'light';
 
   useEffect(() => {
-    fetch(`https://ressipy.com/api/categories/${slug}`)
-      .then(response => response.json())
+    fetchCategoryBySlug(slug as string)
       .then(data => {
         setCategory(data.category);
         navigation.setOptions({ title: data.category.name });
