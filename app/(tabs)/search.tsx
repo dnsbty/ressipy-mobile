@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -6,7 +6,7 @@ import {
   ScrollView,
   View,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { searchRecipes } from "@/api/database";
@@ -21,6 +21,12 @@ export default function SearchScreen() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const router = useRouter();
   const colorScheme = useColorScheme() ?? "light";
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    console.log("Search screen mounted");
+    navigation.setOptions({ title: "Search" });
+  }, [navigation]);
 
   const handleSearch = async (text: string) => {
     setQuery(text);
@@ -33,15 +39,20 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: Colors[colorScheme].background }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: Colors[colorScheme].background },
+      ]}
+    >
       <View style={styles.searchContainer}>
         <TextInput
           style={[
             styles.searchInput,
-            { 
-              backgroundColor: colorScheme === 'dark' ? '#333' : '#f0f0f0',
-              color: Colors[colorScheme].text 
-            }
+            {
+              backgroundColor: colorScheme === "dark" ? "#333" : "#f0f0f0",
+              color: Colors[colorScheme].text,
+            },
           ]}
           placeholder="Search recipes..."
           placeholderTextColor="#999"

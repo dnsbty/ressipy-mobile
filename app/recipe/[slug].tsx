@@ -53,6 +53,13 @@ export default function RecipeScreen() {
   };
 
   useEffect(() => {
+    // Set the back button title based on the previous route
+    const navState = navigation.getState();
+    const previousRoute = navState?.routes[navState?.routes.length - 2];
+    if (!previousRoute?.name.includes('category')) {
+      navigation.setOptions({ headerBackTitle: 'Search' });
+    }
+
     fetchRecipeBySlug(slug as string)
       .then((data) => {
         setRecipe(data.recipe);
@@ -62,7 +69,7 @@ export default function RecipeScreen() {
         setError("Failed to load recipe");
         setIsLoading(false);
       });
-  }, [slug]);
+  }, [slug, navigation]);
 
   useEffect(() => {
     navigation.setOptions({

@@ -32,7 +32,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
-          headerBackTitle: 'Home',
           headerTintColor: Colors[colorScheme ?? 'light'].tint,
         }}
       >
