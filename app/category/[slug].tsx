@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -25,6 +25,7 @@ export default function CategoryScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const navigation = useNavigation();
   const colorScheme = useColorScheme() ?? 'light';
 
   useEffect(() => {
@@ -32,13 +33,14 @@ export default function CategoryScreen() {
       .then(response => response.json())
       .then(data => {
         setCategory(data.category);
+        navigation.setOptions({ title: data.category.name });
         setIsLoading(false);
       })
       .catch(err => {
         setError('Failed to load recipes');
         setIsLoading(false);
       });
-  }, [slug]);
+  }, [slug, navigation]);
 
   if (isLoading) {
     return (
@@ -58,7 +60,6 @@ export default function CategoryScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>{category.name}</ThemedText>
       {category.recipes.map((recipe) => (
         <TouchableOpacity
           key={recipe.slug}
@@ -81,9 +82,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  title: {
-    marginBottom: 20,
   },
   row: {
     flexDirection: 'row',

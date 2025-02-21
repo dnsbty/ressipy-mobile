@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useEffect, useState } from "react";
+import { StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemedText } from "@/components/ThemedText";
+import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
 
 type Category = {
   name: string;
@@ -18,40 +18,42 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = useColorScheme() ?? "light";
 
   useEffect(() => {
-    fetch('https://ressipy.com/api/categories')
-      .then(response => response.json())
-      .then(data => {
+    fetch("https://ressipy.com/api/categories")
+      .then((response) => response.json())
+      .then((data) => {
         setCategories(data.categories);
         setIsLoading(false);
       })
-      .catch(err => {
-        setError('Failed to load categories');
+      .catch(() => {
+        setError("Failed to load categories");
         setIsLoading(false);
       });
   }, []);
 
   if (isLoading) {
     return (
-      <ThemedView style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ActivityIndicator size="large" color={Colors[colorScheme].tint} />
-      </ThemedView>
+      </SafeAreaView>
     );
   }
 
   if (error) {
     return (
-      <ThemedView style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <ThemedText>{error}</ThemedText>
-      </ThemedView>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Categories</ThemedText>
+    <SafeAreaView style={styles.container}>
+      <ThemedText type="title" style={styles.title}>
+        Categories
+      </ThemedText>
       {categories.map((category) => (
         <TouchableOpacity
           key={category.slug}
@@ -66,7 +68,7 @@ export default function HomeScreen() {
           />
         </TouchableOpacity>
       ))}
-    </ThemedView>
+    </SafeAreaView>
   );
 }
 
@@ -74,16 +76,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+    backgroundColor: Colors.light.background,
   },
   title: {
     marginBottom: 20,
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
   },
 });
